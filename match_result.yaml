@@ -1,0 +1,13 @@
+match:
+    datetime: 2015-10-21 07:28:40 
+    competitor: 龙友 
+    goal: 2
+    loss: 3
+
+goal:
+    - 杭晨 任意球
+    - 杭晨 点球
+
+#姓名 上场时间 状态（0正常，1缺席，2伤病）
+duration:
+    - 杭晨 60 0

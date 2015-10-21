@@ -7,7 +7,7 @@ CREATE TABLE if not exists `players` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE if not exists `match_log` (
-    `id` int NOT NULL,
+    `id` int NOT NULL AUTO_INCREMENT,
     `datetime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `competitor` varchar(64) NOT NULL,
     `goal` tinyint NOT NULL,
@@ -26,13 +26,11 @@ CREATE TABLE if not exists `duration_log`(
 CREATE TABLE if not exists `goal_log` (
     `match_id` int NOT NULL,
     `player_id` int NOT NULL,
-    `goal` tinyint NOT NULL DEFAULT 0,
-    `goal_type` tinyint NOT NULL DEFAULT 0,
-    PRIMARY KEY (`match_id`,`player_id`)
+    `goal_type` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE if not exists `revenue_log` (
-    `id` int NOT NULL,
+    `id` int NOT NULL AUTO_INCREMENT,
     `player_id` int NOT NULL,
     `datetime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `amount` int NOT NULL,
