@@ -13,6 +13,7 @@ import (
 type MatchInfo struct {
 	Datetime   string
 	Competitor string
+	Cost       int
 	Goal       int
 	Loss       int
 }
@@ -52,7 +53,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	r, err := tx.Exec("INSERT INTO match_log(datetime,competitor,goal,loss) VALUES(?,?,?,?)", result.Match.Datetime, result.Match.Competitor, result.Match.Goal, result.Match.Loss)
+	r, err := tx.Exec("INSERT INTO match_log(datetime,competitor,cost,goal,loss) VALUES(?,?,?,?,?)", result.Match.Datetime, result.Match.Competitor, result.Match.Cost, result.Match.Goal, result.Match.Loss)
 	if err != nil {
 		tx.Rollback()
 		log.Fatalln(err)
@@ -63,7 +64,6 @@ func main() {
 		tx.Rollback()
 		log.Fatalln(err)
 	}
-	log.Println(matchId)
 
 	for _, goal := range result.Goal {
 		g := strings.Split(goal, " ")

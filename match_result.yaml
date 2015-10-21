@@ -1,6 +1,7 @@
 match:
     datetime: 2015-10-21 07:28:40 
     competitor: 龙友 
+    cost: 390
     goal: 2
     loss: 3
 

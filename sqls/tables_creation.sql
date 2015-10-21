@@ -10,6 +10,7 @@ CREATE TABLE if not exists `match_log` (
     `id` int NOT NULL AUTO_INCREMENT,
     `datetime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `competitor` varchar(64) NOT NULL,
+    `cost` int NOT NULL,
     `goal` tinyint NOT NULL,
     `loss` tinyint NOT NULL,
     PRIMARY KEY (`id`)
