@@ -41,7 +41,7 @@ func loadMatchLog(path string) {
 func main() {
 	matchPath := flag.String("match", "./match_result.yaml", "match result file")
 	loadMatchLog(*matchPath)
-	dbString := flag.String("DB", "hangchen:hangchen@tcp(localhost:3306)/football", "db string")
+	dbString := flag.String("DB", "ty:ty789@tcp(nporsche.com:3306)/football", "db string")
 	db, err := sql.Open("mysql", *dbString)
 	if err != nil {
 		log.Fatalln(err)

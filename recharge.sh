@@ -1,7 +1,7 @@
 #!/bin/bash
-host=127.0.0.1
-name=hangchen
-password=hangchen
+host=nporsche.com
+name=ty
+password=ty789
 
 mysql -h$host -u$name -p$password << EOF
 use football;
