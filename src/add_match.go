@@ -1,12 +1,10 @@
 package main
 
 import (
-	"database/sql"
-	"flag"
-	_ "github.com/go-sql-driver/mysql"
 	goyaml "github.com/nporsche/goyaml"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"strings"
 )
 
@@ -39,14 +37,8 @@ func loadMatchLog(path string) {
 	}
 }
 
-func main() {
-	matchPath := flag.String("match", "./match_result.yaml", "match result file")
+func addMatchHandler(w http.ResponseWriter, req *http.Request) {
 	loadMatchLog(*matchPath)
-	dbString := flag.String("DB", "ty:ty789@tcp(nporsche.com:3306)/football", "db string")
-	db, err := sql.Open("mysql", *dbString)
-	if err != nil {
-		log.Fatalln(err)
-	}
 	tx, err := db.Begin()
 	if err != nil {
 		tx.Rollback()
@@ -56,13 +48,13 @@ func main() {
 	r, err := tx.Exec("INSERT INTO match_log(datetime,competitor,cost,goal,loss) VALUES(?,?,?,?,?)", result.Match.Datetime, result.Match.Competitor, result.Match.Cost, result.Match.Goal, result.Match.Loss)
 	if err != nil {
 		tx.Rollback()
-		log.Fatalln(err)
+		log.Fatalln("insert match_log error:", err)
 	}
 
 	matchId, err := r.LastInsertId()
 	if err != nil {
 		tx.Rollback()
-		log.Fatalln(err)
+		log.Fatalln("match_log lastInsertedId error:", err)
 	}
 
 	for _, goal := range result.Goal {
@@ -73,7 +65,7 @@ func main() {
 		err := tx.QueryRow("select id from players where name=?", player).Scan(&playerId)
 		if err != nil {
 			tx.Rollback()
-			log.Fatalln(err)
+			log.Fatalln(player, "no id error:", err)
 		}
 
 		_, err = tx.Exec("INSERT INTO goal_log(match_id,player_id,goal_type) VALUES(?,?,?)", matchId, playerId, goalType)
@@ -92,7 +84,7 @@ func main() {
 		err := tx.QueryRow("select id from players where name=?", player).Scan(&playerId)
 		if err != nil {
 			tx.Rollback()
-			log.Fatalln(err)
+			log.Fatalln(player, "no id error:", err)
 		}
 
 		_, err = tx.Exec("INSERT INTO duration_log(match_id,player_id,duration, status) VALUES(?,?,?,?)", matchId, playerId, dur, status)
