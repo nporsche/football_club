@@ -3,7 +3,6 @@ package main
 import (
 	goyaml "github.com/nporsche/goyaml"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -24,37 +23,36 @@ type MatchResult struct {
 
 var result MatchResult
 
-func loadMatchLog(path string) {
-	var content []byte
-	var err error
-	if content, err = ioutil.ReadFile(path); err != nil {
-		log.Fatalln("ReloadConfig failure from path:" + path)
-		return
-	}
-	if err := goyaml.Unmarshal(content, &result); err != nil {
-		log.Fatalln("ReloadConfig unmarshal failure from path:" + path)
-		return
-	}
+func loadMatchLog(content []byte) error {
+	return goyaml.Unmarshal(content, &result)
 }
 
 func addMatchHandler(w http.ResponseWriter, req *http.Request) {
-	loadMatchLog(*matchPath)
+	content, _ := ioutil.ReadAll(req.Body)
+	if loadMatchLog(content) != nil {
+		w.Write([]byte("比赛结果格式错误"))
+		return
+	}
+
 	tx, err := db.Begin()
 	if err != nil {
 		tx.Rollback()
-		log.Fatalln(err)
+		w.Write([]byte("db Begin error"))
+		return
 	}
 
 	r, err := tx.Exec("INSERT INTO match_log(datetime,competitor,cost,goal,loss) VALUES(?,?,?,?,?)", result.Match.Datetime, result.Match.Competitor, result.Match.Cost, result.Match.Goal, result.Match.Loss)
 	if err != nil {
 		tx.Rollback()
-		log.Fatalln("insert match_log error:", err)
+		w.Write([]byte("insert into match_log error"))
+		return
 	}
 
 	matchId, err := r.LastInsertId()
 	if err != nil {
 		tx.Rollback()
-		log.Fatalln("match_log lastInsertedId error:", err)
+		w.Write([]byte("match_log lastInsertedId error"))
+		return
 	}
 
 	for _, goal := range result.Goal {
@@ -65,13 +63,15 @@ func addMatchHandler(w http.ResponseWriter, req *http.Request) {
 		err := tx.QueryRow("select id from players where name=?", player).Scan(&playerId)
 		if err != nil {
 			tx.Rollback()
-			log.Fatalln(player, "no id error:", err)
+			w.Write([]byte("cannot find id of " + player))
+			return
 		}
 
 		_, err = tx.Exec("INSERT INTO goal_log(match_id,player_id,goal_type) VALUES(?,?,?)", matchId, playerId, goalType)
 		if err != nil {
 			tx.Rollback()
-			log.Fatalln(err)
+			w.Write([]byte("INSERT INTO goal_log error: " + player))
+			return
 		}
 	}
 
@@ -84,19 +84,21 @@ func addMatchHandler(w http.ResponseWriter, req *http.Request) {
 		err := tx.QueryRow("select id from players where name=?", player).Scan(&playerId)
 		if err != nil {
 			tx.Rollback()
-			log.Fatalln(player, "no id error:", err)
+			w.Write([]byte("cannot find id of " + player))
+			return
 		}
 
 		_, err = tx.Exec("INSERT INTO duration_log(match_id,player_id,duration, status) VALUES(?,?,?,?)", matchId, playerId, dur, status)
 		if err != nil {
 			tx.Rollback()
-			log.Fatalln(err)
+			w.Write([]byte("INSERT INTO duration_log error: " + player))
+			return
 		}
 	}
 	err = tx.Commit()
 	if err != nil {
-		log.Fatalln(err)
+		w.Write([]byte("Commit error"))
 	}
 
-	log.Println("match result added")
+	w.Write([]byte("MATCH ADDED!"))
 }

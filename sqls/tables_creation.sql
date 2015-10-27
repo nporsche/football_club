@@ -1,8 +1,9 @@
 CREATE TABLE if not exists `players` (
-    `id` int NOT NULL,
+    `id` int NOT NULL AUTO_INCREMENT,
     `name` varchar(64) NOT NULL,
     `cellphone` varchar(20) NOT NULL,
     `status` tinyint NOT NULL,
+    `tag` smallint NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
