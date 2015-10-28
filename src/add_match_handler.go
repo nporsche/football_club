@@ -44,14 +44,14 @@ func addMatchHandler(w http.ResponseWriter, req *http.Request) {
 	r, err := tx.Exec("INSERT INTO match_log(datetime,competitor,cost,goal,loss) VALUES(?,?,?,?,?)", result.Match.Datetime, result.Match.Competitor, result.Match.Cost, result.Match.Goal, result.Match.Loss)
 	if err != nil {
 		tx.Rollback()
-		w.Write([]byte("insert into match_log error"))
+		w.Write([]byte("insert into match_log error:" + err.Error()))
 		return
 	}
 
 	matchId, err := r.LastInsertId()
 	if err != nil {
 		tx.Rollback()
-		w.Write([]byte("match_log lastInsertedId error"))
+		w.Write([]byte("match_log lastInsertedId error:" + err.Error()))
 		return
 	}
 
@@ -70,7 +70,7 @@ func addMatchHandler(w http.ResponseWriter, req *http.Request) {
 		_, err = tx.Exec("INSERT INTO goal_log(match_id,player_id,goal_type) VALUES(?,?,?)", matchId, playerId, goalType)
 		if err != nil {
 			tx.Rollback()
-			w.Write([]byte("INSERT INTO goal_log error: " + player))
+			w.Write([]byte("INSERT INTO goal_log for " + player + " error:" + err.Error()))
 			return
 		}
 	}
@@ -91,13 +91,13 @@ func addMatchHandler(w http.ResponseWriter, req *http.Request) {
 		_, err = tx.Exec("INSERT INTO duration_log(match_id,player_id,duration, status) VALUES(?,?,?,?)", matchId, playerId, dur, status)
 		if err != nil {
 			tx.Rollback()
-			w.Write([]byte("INSERT INTO duration_log error: " + player))
+			w.Write([]byte("INSERT INTO duration_log for " + player + " error:" + err.Error()))
 			return
 		}
 	}
 	err = tx.Commit()
 	if err != nil {
-		w.Write([]byte("Commit error"))
+		w.Write([]byte("Commit error:" + err.Error()))
 	}
 
 	w.Write([]byte("MATCH ADDED!"))
