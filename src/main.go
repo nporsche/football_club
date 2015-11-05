@@ -27,5 +27,6 @@ func main() {
 	dbInit()
 	http.HandleFunc("/accountQuery", accountQueryHandler)
 	http.HandleFunc("/addMatch", addMatchHandler)
+	http.HandleFunc("/summary", summaryHandler)
 	http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
 }

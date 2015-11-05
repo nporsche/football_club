@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	goyaml "github.com/nporsche/goyaml"
 	"io/ioutil"
 	"net/http"
@@ -29,6 +30,7 @@ func loadMatchLog(content []byte) error {
 
 func addMatchHandler(w http.ResponseWriter, req *http.Request) {
 	content, _ := ioutil.ReadAll(req.Body)
+	fmt.Println(string(content))
 	if loadMatchLog(content) != nil {
 		w.Write([]byte("比赛结果格式错误"))
 		return

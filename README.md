@@ -11,5 +11,5 @@
 姓名 金额 原因
 ./recharge.sh "hangchen" 100 "2121"
 
-curl  --data-binary @match_result.yaml http://localhost:8080/addMatch
+curl  --data-binary @match_result.yaml -X POST http://nporsche.com:8080/addMatch
 
