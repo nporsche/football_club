@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"database/sql"
 	"fmt"
 	"math"
 	"net/http"
@@ -69,26 +70,33 @@ func accountQueryHandler(w http.ResponseWriter, req *http.Request) {
 		rows.Scan(&matchId, &disDatetime, &disCompetitor, &cost)
 
 		var status int
-		db.QueryRow("select duration, status from duration_log where player_id=? AND match_id=?", playerId, matchId).Scan(&disDuration, &status)
-		if status == 0 {
-			//正常扣款
-			var absence int
-			db.QueryRow("select count(*) as absence from duration_log where match_id=? AND status=1", matchId).Scan(&absence)
+		err = db.QueryRow("select duration, status from duration_log where player_id=? AND match_id=?", playerId, matchId).Scan(&disDuration, &status)
+		if err == nil {
+			if status == 0 {
+				//正常扣款
+				var absence int
+				db.QueryRow("select count(*) as absence from duration_log where match_id=? AND status=1", matchId).Scan(&absence)
 
-			var totalDur int
-			db.QueryRow("select sum(duration) from duration_log where match_id=? and status=0", matchId).Scan(&totalDur)
-			disCost = int(math.Ceil((float64(cost-10*absence) / float64(totalDur) * float64(disDuration))))
-			disStatus = "正常"
+				var totalDur int
+				db.QueryRow("select sum(duration) from duration_log where match_id=? and status=0", matchId).Scan(&totalDur)
+				disCost = int(math.Ceil((float64(cost-10*absence) / float64(totalDur) * float64(disDuration))))
+				disStatus = "正常"
 
-		} else if status == 1 {
-			disStatus = "缺勤"
-			disCost = 10
-		} else if status == 2 {
-			disStatus = "伤病"
-			disCost = 0
+			} else if status == 1 {
+				disStatus = "缺勤"
+				disCost = 10
+			} else if status == 2 {
+				disStatus = "伤病"
+				disCost = 0
+			}
+			totalCost += disCost
+			disp.WriteString(fmt.Sprintf("%s	%s		%d分钟		%s		%d\n", disDatetime, disCompetitor, disDuration, disStatus, disCost))
+		} else if err == sql.ErrNoRows {
+			continue
+		} else {
+			disp.WriteString("错误，请刷新!\n")
+			break
 		}
-		totalCost += disCost
-		disp.WriteString(fmt.Sprintf("%s	%s		%d分钟		%s		%d\n", disDatetime, disCompetitor, disDuration, disStatus, disCost))
 	}
 	disp.WriteString("---------------------------------------------------------------------------------------------------\n")
 	disp.WriteString(fmt.Sprintf("总支出：%d 元\n\n", totalCost))
