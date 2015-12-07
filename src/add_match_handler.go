@@ -65,7 +65,7 @@ func addMatchHandler(w http.ResponseWriter, req *http.Request) {
 		err := tx.QueryRow("select id from players where name=?", player).Scan(&playerId)
 		if err != nil {
 			tx.Rollback()
-			w.Write([]byte("cannot find id of " + player))
+			w.Write([]byte("goal cannot find id of " + player))
 			return
 		}
 
@@ -86,7 +86,7 @@ func addMatchHandler(w http.ResponseWriter, req *http.Request) {
 		err := tx.QueryRow("select id from players where name=?", player).Scan(&playerId)
 		if err != nil {
 			tx.Rollback()
-			w.Write([]byte("cannot find id of " + player))
+			w.Write([]byte("duration cannot find id of " + player))
 			return
 		}
 
