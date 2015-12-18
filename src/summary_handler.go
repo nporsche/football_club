@@ -10,7 +10,7 @@ import (
 func summaryHandler(w http.ResponseWriter, req *http.Request) {
 	disp := bytes.NewBufferString("----------------------\n")
 	disp.WriteString("姓名		余额\n")
-	rows, err := db.Query("select id, name from players")
+	rows, err := db.Query("select id, name from players where status=0")
 	if err != nil {
 		w.Write([]byte("查询球员名单错误"))
 		return

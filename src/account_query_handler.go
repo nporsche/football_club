@@ -8,10 +8,20 @@ import (
 	"net/http"
 )
 
+var statusStringMap map[int]string
+
+func init() {
+	statusStringMap = make(map[int]string)
+	statusStringMap[0] = "正常"
+	statusStringMap[1] = "伤病"
+	statusStringMap[2] = "退出"
+}
+
 func accountQueryHandler(w http.ResponseWriter, req *http.Request) {
 	player := req.FormValue("name")
 	var playerId int
-	err := db.QueryRow("select id from players where name=?", player).Scan(&playerId)
+	var status int
+	err := db.QueryRow("select id,status from players where name=?", player).Scan(&playerId, &status)
 	if err != nil {
 		w.Write([]byte("该队员不存在,请联系队长谢永杰"))
 		return
@@ -24,6 +34,7 @@ func accountQueryHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	disp := bytes.NewBufferString(fmt.Sprintf("姓名：%s\n\n", player))
+	disp.WriteString(fmt.Sprintf("状态：%s\n", statusStringMap[status]))
 	rows, err := db.Query("select datetime, amount, reason from revenue_log where player_id = ?", playerId)
 	if err != nil {
 		w.Write([]byte("查询充值明细异常"))
