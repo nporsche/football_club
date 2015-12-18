@@ -33,8 +33,8 @@ func accountQueryHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	disp := bytes.NewBufferString(fmt.Sprintf("姓名：%s\n\n", player))
-	disp.WriteString(fmt.Sprintf("状态：%s\n", statusStringMap[status]))
+	disp := bytes.NewBufferString(fmt.Sprintf("姓名：%s\n", player))
+	disp.WriteString(fmt.Sprintf("状态：%s\n\n", statusStringMap[status]))
 	rows, err := db.Query("select datetime, amount, reason from revenue_log where player_id = ?", playerId)
 	if err != nil {
 		w.Write([]byte("查询充值明细异常"))
