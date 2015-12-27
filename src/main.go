@@ -11,7 +11,6 @@ import (
 
 var db *sql.DB
 var dbString = flag.String("DB", "ty:ty789@tcp(nporsche.com:3306)/football", "db string")
-var matchPath = flag.String("match", "./match_result.yaml", "match result file")
 var port = flag.Int("port", 8080, "http port")
 
 func dbInit() {

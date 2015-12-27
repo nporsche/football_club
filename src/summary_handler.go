@@ -8,7 +8,22 @@ import (
 )
 
 func summaryHandler(w http.ResponseWriter, req *http.Request) {
-	disp := bytes.NewBufferString("----------------------\n")
+	disp := bytes.NewBufferString("")
+	revenue, e1 := getTotalRevenue()
+	cost, e2 := getTotalCost()
+	if e1 == nil && e2 == nil {
+		disp.WriteString("球队总览:\n----------------------------\n")
+		disp.WriteString(fmt.Sprintf("总收入: %d\n", revenue))
+		disp.WriteString(fmt.Sprintf("总支出: %d\n", cost))
+		disp.WriteString(fmt.Sprintf("余额: %d\n", revenue-cost))
+
+		disp.WriteString("----------------------------\n\n")
+	} else {
+		disp.WriteString("球队收入，支出显示异常\n")
+	}
+
+	//
+	disp.WriteString("球员余额：\n----------------------------\n")
 	disp.WriteString("姓名		余额\n")
 	rows, err := db.Query("select id, name from players where status=0")
 	if err != nil {
@@ -29,9 +44,20 @@ func summaryHandler(w http.ResponseWriter, req *http.Request) {
 			disp.WriteString(fmt.Sprintf("%s		%s\n", name, "异常"))
 		}
 	}
-	disp.WriteString("----------------------\n")
+	disp.WriteString("----------------------------\n")
 	w.Write(disp.Bytes())
 }
+
+func getTotalRevenue() (revenue int, err error) {
+	err = db.QueryRow("select sum(amount) from revenue_log").Scan(&revenue)
+	return
+}
+
+func getTotalCost() (cost int, err error) {
+	err = db.QueryRow("select sum(amount) from match_log").Scan(&cost)
+	return
+}
+
 func getAccountByPlayerId(playerId int) (balance int, err error) {
 	sum := 0
 	err = db.QueryRow("select sum(amount) as sum from revenue_log where player_id=?", playerId).Scan(&sum)
