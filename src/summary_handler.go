@@ -54,7 +54,7 @@ func getTotalRevenue() (revenue int, err error) {
 }
 
 func getTotalCost() (cost int, err error) {
-	err = db.QueryRow("select sum(amount) from match_log").Scan(&cost)
+	err = db.QueryRow("select sum(cost) from match_log").Scan(&cost)
 	return
 }
 
