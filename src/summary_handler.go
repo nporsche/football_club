@@ -98,7 +98,7 @@ func summaryProcess() (sum *Summary, err error) {
 
 		attendance, e := getAttendanceByPlayerId(playerId)
 		if e == nil {
-			player.Attendance = fmt.Sprintf("%%d", attendance)
+			player.Attendance = fmt.Sprintf("%d%", attendance)
 		}
 
 		sum.Players = append(sum.Players, player)
