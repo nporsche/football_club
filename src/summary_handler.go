@@ -7,6 +7,13 @@ import (
 	"net/http"
 )
 
+const (
+	ACTIVE  = "active"
+	SUCCESS = "success"
+	WARNING = "warning"
+	DANGER  = "danger"
+)
+
 type TeamSummary struct {
 	Revenue int
 	Cost    int
@@ -89,7 +96,7 @@ func summaryProcess() (sum *Summary, err error) {
 		player := &PlayerSummary{Name: name,
 			Tag:        tag,
 			Status:     statusMap[status],
-			ColorState: "warning",
+			ColorState: SUCCESS,
 			Attendance: "异常",
 			Balance:    0}
 
@@ -102,6 +109,18 @@ func summaryProcess() (sum *Summary, err error) {
 		if e == nil {
 			player.Attendance = fmt.Sprintf("%d%%", attendance)
 		}
+
+		//color state
+		if b < 0 {
+			player.ColorState = DANGER
+		} else if b < 50 {
+			player.ColorState = WARNING
+		}
+		if status == 1 {
+			//伤病
+			player.ColorState = ACTIVE
+		}
+		//color state end
 
 		sum.Players = append(sum.Players, player)
 	}
