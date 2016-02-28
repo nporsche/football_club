@@ -29,7 +29,7 @@ type Summary struct {
 var statusMap = map[int]string{0: "正常", 1: "伤病"}
 
 func fillError(detail string, err error, rw http.ResponseWriter) {
-	res := fmt.Sprintf("error:%s\n detail:%s\n", err.Error(), detail)
+	res := fmt.Sprintf("error:%s\ndetail:%s\n", err.Error(), detail)
 	rw.Write([]byte(res))
 }
 
