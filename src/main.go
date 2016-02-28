@@ -28,6 +28,6 @@ func main() {
 	http.HandleFunc("/accountQuery", accountQueryHandler)
 	http.HandleFunc("/addMatch", addMatchHandler)
 	http.HandleFunc("/summary", summaryHandler)
-	http.HandleFunc("/", summaryHandler)
+	http.HandleFunc("/index.html", summaryHandler)
 	http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
 }
