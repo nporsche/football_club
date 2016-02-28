@@ -1,34 +1,76 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
+	"html/template"
 	"math"
 	"net/http"
 )
 
-func summaryHandler(w http.ResponseWriter, req *http.Request) {
-	disp := bytes.NewBufferString("")
-	revenue, e1 := getTotalRevenue()
-	cost, e2 := getTotalCost()
-	if e1 == nil && e2 == nil {
-		disp.WriteString("球队总览:\n----------------------------\n")
-		disp.WriteString(fmt.Sprintf("总收入: %d\n", revenue))
-		disp.WriteString(fmt.Sprintf("总支出: %d\n", cost))
-		disp.WriteString(fmt.Sprintf("余额: %d\n", revenue-cost))
+type TeamSummary struct {
+	Revenue int
+	Cost    int
+	Balance int
+}
 
-		disp.WriteString("----------------------------\n\n")
-	} else {
-		disp.WriteString("球队收入，支出显示异常\n")
+type PlayerSummary struct {
+	Name       string
+	Tag        int
+	Attendance string
+	Balance    int
+	Status     string
+}
+
+type Summary struct {
+	Team    TeamSummary
+	Players []*PlayerSummary
+}
+
+var statusMap = map[int]string{0: "正常", 1: "伤病"}
+
+func fillError(detail string, err error, rw http.ResponseWriter) {
+	res := fmt.Sprintf("error:%s\n detail:%s\n", err.Error(), detail)
+	rw.Write([]byte(res))
+}
+
+func summaryHandler(w http.ResponseWriter, req *http.Request) {
+	sum, err := summaryProcess()
+	if err != nil {
+		fillError("summary process fatal", err, w)
+		return
+	}
+	tmpl, err := template.ParseFiles(*tmplPath + "summary.tmpl")
+	if err != nil {
+		fillError("template parse file fatal", err, w)
+		return
 	}
 
-	//
-	disp.WriteString("球员余额：\n----------------------------\n")
-	disp.WriteString("姓名		余额\n")
-	rows, err := db.Query("select id, name from players where status=0")
+	err = tmpl.Execute(w, sum)
 	if err != nil {
-		w.Write([]byte("查询球员名单错误"))
+		fillError("template execute fatal", err, w)
 		return
+	}
+}
+
+func summaryProcess() (sum *Summary, err error) {
+	sum = &Summary{Team: TeamSummary{},
+		Players: make([]*PlayerSummary, 0)}
+
+	revenue, err := getTotalRevenue()
+	if err != nil {
+		return nil, err
+	}
+	cost, err := getTotalCost()
+	if err != nil {
+		return nil, err
+	}
+	sum.Team.Revenue = revenue
+	sum.Team.Cost = cost
+	sum.Team.Balance = revenue - cost
+
+	rows, err := db.Query("select id, name, tag, status from players")
+	if err != nil {
+		return nil, err
 	}
 	for {
 		if !rows.Next() {
@@ -36,16 +78,32 @@ func summaryHandler(w http.ResponseWriter, req *http.Request) {
 		}
 		var name string
 		var playerId int
-		rows.Scan(&playerId, &name)
+		var tag int
+		var status int
+		rows.Scan(&playerId, &name, &tag, &status)
+		if status == 2 {
+			//已经离队不予处理
+			continue
+		}
+		player := &PlayerSummary{Name: name,
+			Tag:        tag,
+			Status:     statusMap[status],
+			Attendance: "异常",
+			Balance:    0}
+
 		b, e := getAccountByPlayerId(playerId)
 		if e == nil {
-			disp.WriteString(fmt.Sprintf("%s		%d\n", name, b))
-		} else {
-			disp.WriteString(fmt.Sprintf("%s		%s\n", name, "异常"))
+			player.Balance = b
 		}
+
+		attendance, e := getAttendanceByPlayerId(playerId)
+		if e == nil {
+			player.Attendance = fmt.Sprintf("%%d", attendance)
+		}
+
+		sum.Players = append(sum.Players, player)
 	}
-	disp.WriteString("----------------------------\n")
-	w.Write(disp.Bytes())
+	return sum, nil
 }
 
 func getTotalRevenue() (revenue int, err error) {
@@ -56,6 +114,23 @@ func getTotalRevenue() (revenue int, err error) {
 func getTotalCost() (cost int, err error) {
 	err = db.QueryRow("select sum(cost) from match_log").Scan(&cost)
 	return
+}
+
+func getAttendanceByPlayerId(playerId int) (attendRate int, err error) {
+	var matchCnt int
+	err = db.QueryRow("select count(*) from duration_log where player_id=?", playerId).Scan(&matchCnt)
+	if err != nil {
+		return 0, err
+	}
+	if matchCnt == 0 {
+		return 0, nil
+	}
+	var available int
+	err = db.QueryRow("select count(*) from duration_log where player_id=? AND status!=0", playerId).Scan(&available)
+	if err != nil {
+		return 0, err
+	}
+	return int((float64(available) / float64(matchCnt)) * 100), nil
 }
 
 func getAccountByPlayerId(playerId int) (balance int, err error) {
