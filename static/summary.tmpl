@@ -42,7 +42,7 @@
       </thead>
       <tbody>
          {{range $player :=.Players}}
-         <tr>
+         <tr class="{{$player.ColorState}}">
             <td>{{$player.Name}}</td>
             <td>{{$player.Tag}}</td>
             <td>{{$player.Attendance}}</td>

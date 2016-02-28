@@ -19,6 +19,7 @@ type PlayerSummary struct {
 	Attendance string
 	Balance    int
 	Status     string
+	ColorState string
 }
 
 type Summary struct {
@@ -88,6 +89,7 @@ func summaryProcess() (sum *Summary, err error) {
 		player := &PlayerSummary{Name: name,
 			Tag:        tag,
 			Status:     statusMap[status],
+			ColorState: "warning",
 			Attendance: "异常",
 			Balance:    0}
 
