@@ -98,7 +98,7 @@ func summaryProcess() (sum *Summary, err error) {
 
 		attendance, e := getAttendanceByPlayerId(playerId)
 		if e == nil {
-			player.Attendance = fmt.Sprintf("%d%", attendance)
+			player.Attendance = fmt.Sprintf("%d%%", attendance)
 		}
 
 		sum.Players = append(sum.Players, player)
@@ -126,7 +126,7 @@ func getAttendanceByPlayerId(playerId int) (attendRate int, err error) {
 		return 0, nil
 	}
 	var available int
-	err = db.QueryRow("select count(*) from duration_log where player_id=? AND status!=0", playerId).Scan(&available)
+	err = db.QueryRow("select count(*) from duration_log where player_id=? AND status=0", playerId).Scan(&available)
 	if err != nil {
 		return 0, err
 	}
