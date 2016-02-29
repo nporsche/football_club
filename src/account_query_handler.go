@@ -23,6 +23,7 @@ type Match struct {
 	Assists    int
 	Cost       int
 	TotalCost  int
+	ColorState string
 }
 
 type PlayerDetail struct {
@@ -110,11 +111,14 @@ func fillPlayerMatchInfo(matchId, playerId int, match *Match) (err error) {
 			var totalDur int
 			db.QueryRow("select sum(duration) from duration_log where match_id=? and status=0", matchId).Scan(&totalDur)
 			match.Cost = int(math.Ceil((float64(match.TotalCost-10*absence) / float64(totalDur) * float64(match.Duration))))
+			match.ColorState = SUCCESS
 
 		} else if status == 1 {
 			match.Cost = 10
+			match.ColorState = DANGER
 		} else if status == 2 {
 			match.Cost = 0
+			match.ColorState = WARNING
 		}
 	}
 
