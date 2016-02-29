@@ -122,7 +122,7 @@ func fillPlayerMatchInfo(matchId, playerId int, match *Match) (err error) {
 		}
 	}
 
-	rows, err := db.Query("select goal_type,count(*) from goal_log where match_id=36 AND player_id=7 group by goal_type")
+	rows, err := db.Query("select goal_type,count(*) from goal_log where match_id=? AND player_id=? group by goal_type", matchId, playerId)
 	if err != nil {
 		return err
 	}
