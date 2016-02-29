@@ -22,9 +22,9 @@
       <tbody>
          {{range $reve :=.Revenues}}
          <tr>
-            <td>￥{{.reve.Time}}</td>
-            <td>￥{{.reve.Amount}}</td>
-            <td>￥{{.reve.Comment}}</td>
+            <td>￥{{$reve.Time}}</td>
+            <td>￥{{$reve.Amount}}</td>
+            <td>￥{{$reve.Comment}}</td>
          </tr>
          {{end}}
       </tbody>
