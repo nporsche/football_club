@@ -43,7 +43,11 @@
       <tbody>
          {{range $player :=.Players}}
          <tr class="{{$player.ColorState}}">
-            <td>{{$player.Name}}</td>
+            <td>
+              <a href="http://nporsche.com:8080/accountQuery?name={{$player.Name}}">
+              {{$player.Name}}
+              </a>
+            </td>
             <td>{{$player.Tag}}</td>
             <td>{{$player.Attendance}}</td>
             <td>￥{{$player.Balance}}</td>
