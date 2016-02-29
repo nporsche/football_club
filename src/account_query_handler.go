@@ -122,7 +122,23 @@ func fillPlayerMatchInfo(matchId, playerId int, match *Match) (err error) {
 		}
 	}
 
-	//TODO tech
+	rows, err := db.Query("select goal_type,count(*) from goal_log where match_id=36 AND player_id=7 group by goal_type")
+	if err != nil {
+		return err
+	}
+	for {
+		if !rows.Next() {
+			break
+		}
+		var goal_type string
+		var count int
+		rows.Scan(&goal_type, &count)
+		if goal_type == "助攻" {
+			match.Assists = match.Assists + count
+		} else {
+			match.Goals = match.Goals + count
+		}
+	}
 
 	return nil
 }
