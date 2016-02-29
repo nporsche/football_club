@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="utf-8">
+   <title>{{.Name}} 信息</title>
+   <link href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+   <script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+   <script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="table-responsive">
+  <table class="table">
+    <caption>收入表</caption>
+      <thead>
+         <tr>
+            <th>充值时间</th>
+            <th>充值金额</th>
+            <th>备注</th>
+         </tr>
+      </thead>
+      <tbody>
+         {{range $reve :=.Revenues}}
+         <tr>
+            <td>￥{{.reve.Time}}</td>
+            <td>￥{{.reve.Amount}}</td>
+            <td>￥{{.reve.Comment}}</td>
+         </tr>
+         {{end}}
+      </tbody>
+  </table>
+</div>
+
+<div class="table-responsive">
+   <table class="table">
+      <caption>比赛信息</caption>
+      <thead>
+         <tr>
+            <th>时间</th>
+            <th>对手</th>
+            <th>状态</th>
+            <th>上场时间</th>
+            <th>助攻</th>
+            <th>进球</th>
+            <th>消费金额</th>
+         </tr>
+      </thead>
+      <tbody>
+         {{range $match :=.Matches}}
+         <tr class="{{$match.ColorState}}">
+            <td>{{$match.Time}}</td>
+            <td>{{$match.Competitor}}</td>
+            <td>{{$match.Status}}</td>
+            <td>{{$match.Duration}}分钟</td>
+            <td>{{$match.Assists}}</td>
+            <td>{{$match.Goals}}</td>
+            <td>￥{{$match.Cost}}</td>
+         </tr>
+         {{end}}
+      </tbody>
+   </table>
+</div>  	
+
+</body>
+</html> 	
