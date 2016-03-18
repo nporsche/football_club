@@ -57,7 +57,7 @@ func addMatchHandlerV2(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	r, err := tx.Exec("INSERT INTO match_log(datetime,competitor,cost,goal,loss) VALUES(?,?,?,?,?)", result.Match.Datetime, result.Match.Competitor, result.Match.Amount, result.Match.Goal, result.Match.Loss)
+	r, err := tx.Exec("INSERT INTO match_log(datetime,competitor,cost,goal,loss,author) VALUES(?,?,?,?,?,?)", result.Match.Datetime, result.Match.Competitor, result.Match.Amount, result.Match.Goal, result.Match.Loss, author)
 	if err != nil {
 		tx.Rollback()
 		w.Write([]byte("insert into match_log error:" + err.Error()))
@@ -80,14 +80,14 @@ func addMatchHandlerV2(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		_, err = tx.Exec("INSERT INTO duration_log(match_id,player_id,duration, status) VALUES(?,?,?,?)", matchId, playerId, playerInfo.Duration, playerInfo.Status)
+		_, err = tx.Exec("INSERT INTO duration_log(match_id,player_id,duration, status, author) VALUES(?,?,?,?,?)", matchId, playerId, playerInfo.Duration, playerInfo.Status, author)
 		if err != nil {
 			tx.Rollback()
 			w.Write([]byte("INSERT INTO duration_log for " + playerInfo.Name + " error:" + err.Error()))
 			return
 		}
 
-		err = insertTechData(tx, int(matchId), playerId, playerInfo.FreeKick, playerInfo.Penalty, playerInfo.Mobile, playerInfo.Assist)
+		err = insertTechData(tx, int(matchId), playerId, playerInfo.FreeKick, playerInfo.Penalty, playerInfo.Mobile, playerInfo.Assist, author)
 		if err != nil {
 			tx.Rollback()
 			w.Write([]byte("INSERT INTO goal_log for " + playerInfo.Name + " error:" + err.Error()))
@@ -104,29 +104,29 @@ func addMatchHandlerV2(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("添加比赛成功，作者:" + author))
 }
 
-func insertTechData(tx *sql.Tx, matchId, playerId, freeKick, penalty, mobile, assist int) (err error) {
+func insertTechData(tx *sql.Tx, matchId, playerId, freeKick, penalty, mobile, assist int, author string) (err error) {
 	for i := 0; i < freeKick; i++ {
-		_, err = tx.Exec("INSERT INTO goal_log(match_id,player_id,goal_type) VALUES(?,?,?)", matchId, playerId, "任意球")
+		_, err = tx.Exec("INSERT INTO goal_log(match_id,player_id,goal_type,author) VALUES(?,?,?,?)", matchId, playerId, "任意球", author)
 		if err != nil {
 			return err
 		}
 	}
 
 	for i := 0; i < penalty; i++ {
-		_, err = tx.Exec("INSERT INTO goal_log(match_id,player_id,goal_type) VALUES(?,?,?)", matchId, playerId, "点球")
+		_, err = tx.Exec("INSERT INTO goal_log(match_id,player_id,goal_type,author) VALUES(?,?,?,?)", matchId, playerId, "点球", author)
 		if err != nil {
 			return err
 		}
 	}
 
 	for i := 0; i < mobile; i++ {
-		_, err = tx.Exec("INSERT INTO goal_log(match_id,player_id,goal_type) VALUES(?,?,?)", matchId, playerId, "运动战")
+		_, err = tx.Exec("INSERT INTO goal_log(match_id,player_id,goal_type,author) VALUES(?,?,?,?)", matchId, playerId, "运动战", author)
 		if err != nil {
 			return err
 		}
 	}
 	for i := 0; i < assist; i++ {
-		_, err = tx.Exec("INSERT INTO goal_log(match_id,player_id,goal_type) VALUES(?,?,?)", matchId, playerId, "助攻")
+		_, err = tx.Exec("INSERT INTO goal_log(match_id,player_id,goal_type,author) VALUES(?,?,?,?)", matchId, playerId, "助攻", author)
 		if err != nil {
 			return err
 		}
