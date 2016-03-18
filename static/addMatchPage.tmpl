@@ -8,6 +8,27 @@
    <script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 </head>
 <body>
+<div class="container">
+<div class="masthead">
+        <h3 class="text-muted">Project name</h3>
+        <nav>
+          <ul class="nav nav-justified">
+            <li class="active"><a href="http://nporsche.com/ty">Home</a></li>
+			<li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">球队管理<span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">比赛信息添加</a></li>
+                <li><a href="#">球员信息</a></li>
+                <li><a href="#">充值</a></li>
+              </ul>
+            </li>
+            <li><a href="#">技术统计</a></li>
+            <li><a href="#">相册</a></li>
+            <li><a href="#">关于</a></li>
+            <li><a href="#">联系我们</a></li>
+          </ul>
+        </nav>
+</div>
 <div class="input-group">
   <span class="input-group-addon" id="basic-addon1">时间</span>
   <input id="datetime" type="text" class="form-control" value="2016-02-27 14:00:00" aria-describedby="basic-addon1">
@@ -140,5 +161,6 @@ submitBtn.onclick = function (e) {
 }
 
 </script>
+</div>
 </body>
 </html> 	
