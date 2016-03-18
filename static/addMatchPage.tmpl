@@ -98,11 +98,11 @@ submitBtn.onclick = function (e) {
   var matchResult = {};
   matchResult["authCode"] = authCode.value
   matchResult["match"] = {};
-  matchResult["match"]["amount"] = amount.value
+  matchResult["match"]["amount"] = parseInt(amount.value)
   matchResult["match"]["competitor"] = competitor.value
   matchResult["match"]["datetime"] = datetime.value
-  matchResult["match"]["goal"] = goal.value
-  matchResult["match"]["loss"] = loss.value
+  matchResult["match"]["goal"] = parseInt(goal.value)
+  matchResult["match"]["loss"] = parseInt(loss.value)
 
   matchResult["playerInfo"] = new Array();
 
@@ -117,8 +117,6 @@ submitBtn.onclick = function (e) {
   var assistDOMArray = document.getElementsByClassName('assist');
 
   for (var i = 0; i < tb.rows.length -1 ; i++) {
-
-    
     matchResult["playerInfo"][i] = {}
     matchResult["playerInfo"][i]["name"] = PlayerNameDOMArray[i].textContent.trim();
     matchResult["playerInfo"][i]["tag"] = parseInt(TagDOMArray[i].textContent.trim());
