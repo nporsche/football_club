@@ -41,7 +41,7 @@ func addMatchHandlerV2(w http.ResponseWriter, req *http.Request) {
 	content, _ := ioutil.ReadAll(req.Body)
 	result, err := loadMatchLogV2(content)
 	if err != nil {
-		w.Write([]byte("比赛结果格式错误"))
+		w.Write([]byte("比赛结果格式错误" + err.Error()))
 		return
 	}
 	author, err := CheckAuth(result.AuthCode)
