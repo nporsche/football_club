@@ -69,7 +69,7 @@ func summaryProcess() (sum *Summary, err error) {
 	sum.Team.Cost = cost
 	sum.Team.Balance = revenue - cost
 
-	rows, err := db.Query("select id, name, tag, status from players")
+	rows, err := db.Query("select id, name, tag, status from players where status != 2")
 	if err != nil {
 		return nil, err
 	}
@@ -82,10 +82,6 @@ func summaryProcess() (sum *Summary, err error) {
 		var tag int
 		var status int
 		rows.Scan(&playerId, &name, &tag, &status)
-		if status == 2 {
-			//已经离队不予处理
-			continue
-		}
 		player := &PlayerSummary{Name: name,
 			Tag:        tag,
 			Status:     playerStatusMap[status],

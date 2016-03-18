@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="utf-8">
+   <title>天翊足球队比赛信息添加</title>
+   <link href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+   <script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+   <script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">时间</span>
+  <input id="datetime" type="text" class="form-control" value="2016-02-27 14:00:00" aria-describedby="basic-addon1">
+</div>
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">对手</span>
+  <input id="competitor" type="text" class="form-control" value="龙友" aria-describedby="basic-addon1">
+</div>
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">进球</span>
+  <input id="goal" type="text" class="form-control" value="0" aria-describedby="basic-addon1">
+  <span class="input-group-addon" id="basic-addon1">失球</span>
+  <input id="loss" type="text" class="form-control" value="0" aria-describedby="basic-addon1">
+</div>
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">消费金额</span>
+  <input id="amount" type="text" class="form-control" value="350" aria-describedby="basic-addon1">
+</div>
+
+<div class="table-responsive">
+   <table id="tb" class="table">
+      <caption>出勤信息</caption>
+      <thead>
+         <tr>
+            <th>姓名</th>
+            <th>号码</th>
+            <th>状态</th>
+            <th>上场时间</th>
+            <th>进球-定位球</th>
+            <th>进球-点球</th>
+            <th>进球-运动战</th>
+            <th>助攻</th>
+         </tr>
+      </thead>
+      <tbody>
+         {{range $player :=.}}
+         <tr class="success">
+            <td>
+              <a class="PlayerName" href="http://nporsche.com/ty/accountQuery?name={{$player.Name}}">
+              {{$player.Name}}
+              </a>
+            </td>
+            <td class="Tag">{{$player.Tag}}</td>
+            <td>
+              <div class="btn-group" data-toggle="buttons">
+                <label class="btn btn-primary Status active" value="0">
+                   <input type="radio" id="option1" value="0"> 到场
+                 </label>
+                 <label class="btn btn-primary Status" value="1">
+                   <input type="radio" id="option2" value="1"> 缺席
+                 </label>
+                 <label class="btn btn-primary Status" value="2">
+                   <input type="radio" id="option3" value="2"> 伤病
+                 </label>
+              </div>  
+            </td>
+            <td>
+              <input class="duration" type="text" class="form-control" value="90" aria-describedby="basic-addon1">
+            </td>
+            <td>
+              <input class="freekick" type="text" class="form-control" value="0" aria-describedby="basic-addon1">
+            </td>
+            <td>
+              <input class="penalty" type="text" class="form-control" value="0" aria-describedby="basic-addon1">
+            </td>
+            <td>
+              <input class="mobile" type="text" class="form-control" value="0" aria-describedby="basic-addon1">
+            </td>
+            <td>
+              <input class="assist" type="text" class="form-control" value="0" aria-describedby="basic-addon1">
+            </td>
+         </tr>
+         {{end}}
+      </tbody>
+   </table>
+</div>  	
+
+<div class="col-lg-2" style="float:right">
+    <div class="input-group">
+      <input id="authCode" type="text" class="form-control" placeholder="输入授权码，点击提交">
+      <span class="input-group-btn">
+        <button id="submitBtn" class="btn btn-default" type="button">提交</button>
+      </span>
+    </div><!-- /input-group -->
+  </div><!-- /.col-lg-6 -->
+<script>
+submitBtn.onclick = function (e) {
+  var matchResult = {};
+  matchResult["authCode"] = authCode.value
+  matchResult["match"] = {};
+  matchResult["match"]["amount"] = amount.value
+  matchResult["match"]["competitor"] = competitor.value
+  matchResult["match"]["datetime"] = datetime.value
+  matchResult["match"]["goal"] = goal.value
+  matchResult["match"]["loss"] = loss.value
+
+  matchResult["playerInfo"] = new Array();
+
+  var PlayerNameDOMArray = document.getElementsByClassName('PlayerName');
+
+  var TagDOMArray = document.getElementsByClassName('Tag');
+  var StatusBtnDOMArray = document.getElementsByClassName('Status active')
+  var durDOMArray = document.getElementsByClassName('duration');
+  var freekickDOMArray = document.getElementsByClassName('freekick');
+  var penaltyDOMArray = document.getElementsByClassName('penalty');
+  var mobileDOMArray = document.getElementsByClassName('mobile');
+  var assistDOMArray = document.getElementsByClassName('assist');
+
+  for (var i = 0; i < tb.rows.length -1 ; i++) {
+
+    
+    matchResult["playerInfo"][i] = {}
+    matchResult["playerInfo"][i]["name"] = PlayerNameDOMArray[i].textContent.trim();
+    matchResult["playerInfo"][i]["tag"] = parseInt(TagDOMArray[i].textContent.trim());
+    matchResult["playerInfo"][i]["status"] = parseInt(StatusBtnDOMArray[i].getAttribute('value'));
+    matchResult["playerInfo"][i]["duration"] = parseInt(durDOMArray[i].value.trim());
+    matchResult["playerInfo"][i]["freekick"] = parseInt(freekickDOMArray[i].value.trim());
+    matchResult["playerInfo"][i]["penalty"] = parseInt(penaltyDOMArray[i].value.trim());
+    matchResult["playerInfo"][i]["mobile"] = parseInt(mobileDOMArray[i].value.trim());
+    matchResult["playerInfo"][i]["assist"] = parseInt(assistDOMArray[i].value.trim());
+  }
+
+  console.log(JSON.stringify(matchResult)); 
+
+}
+
+</script>
+</body>
+</html> 	
