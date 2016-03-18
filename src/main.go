@@ -26,7 +26,7 @@ func main() {
 	flag.Parse()
 	dbInit()
 	http.HandleFunc("/accountQuery", accountQueryHandler)
-	http.HandleFunc("/addMatch", addMatchHandler)
+	http.HandleFunc("/addMatch", addMatchHandlerV2)
 	http.HandleFunc("/addMatchPage", addMatchPage)
 	http.HandleFunc("/summary", summaryHandler)
 	http.HandleFunc("/", summaryHandler)

@@ -130,8 +130,15 @@ submitBtn.onclick = function (e) {
     matchResult["playerInfo"][i]["assist"] = parseInt(assistDOMArray[i].value.trim());
   }
 
-  console.log(JSON.stringify(matchResult)); 
-
+  $.ajax({
+    url : 'http://nporsche.com/ty/addMatch',
+    type : 'POST',
+    data: JSON.stringify(matchResult),
+    success : function(resp) {
+        alter(resp)
+    }
+    });
+    console.log(JSON.stringify(matchResult)); 
 }
 
 </script>
