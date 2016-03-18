@@ -135,7 +135,7 @@ submitBtn.onclick = function (e) {
     type : 'POST',
     data: JSON.stringify(matchResult),
     success : function(resp) {
-        alter(resp)
+        alert(resp)
     }
     });
     console.log(JSON.stringify(matchResult)); 
