@@ -114,9 +114,15 @@ func fillPlayerMatchInfo(matchId, playerId int, match *Match) (err error) {
 			match.ColorState = SUCCESS
 
 		} else if status == 1 {
-			match.Cost = 10
+			//缺勤，如果比赛费用小于100，则不用惩罚
+			if match.TotalCost < 100 {
+				match.Cost = 0
+			} else {
+				match.Cost = 10
+			}
 			match.ColorState = DANGER
 		} else if status == 2 {
+			//伤病
 			match.Cost = 0
 			match.ColorState = WARNING
 		}
