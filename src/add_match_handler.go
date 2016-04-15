@@ -99,7 +99,9 @@ func addMatchHandler(w http.ResponseWriter, req *http.Request) {
 	}
 	err = tx.Commit()
 	if err != nil {
+		tx.Rollback()
 		w.Write([]byte("Commit error:" + err.Error()))
+		return
 	}
 
 	w.Write([]byte("MATCH ADDED!"))

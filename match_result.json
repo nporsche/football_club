@@ -1,0 +1,32 @@
+{
+    "authCode": "12131fa",
+    "match": {
+        "amount": 350,
+        "competitor": "龙友",
+        "datetime": "2015-10-27 14:25:00",
+        "goal": 0,
+        "loss": 5
+    },
+    "playerInfo": [
+        {
+            "assist": 5,
+            "duration": 90,
+            "freekick": 1,
+            "mobile": 1,
+            "name": "杭晨",
+            "penalty": 2,
+            "status": 0,
+            "tag": 9
+        },
+        {
+            "assist": 2,
+            "duration": 90,
+            "freekick": 0,
+            "mobile": 0,
+            "name": "吕博",
+            "penalty": 2,
+            "status": 0,
+            "tag": 7
+        }
+    ]
+}
